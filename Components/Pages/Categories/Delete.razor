@@ -1,0 +1,40 @@
+﻿@page "/categories/delete/{id:int}"
+@inject ApplicationDbContext Context
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+@if (Category is null)
+{
+    <p class="text-center">Categoria não encontrada</p>
+    <a href="/categories" class="btn btn-secondary mb-1" role="button">Voltar</a>
+}
+else
+{
+    <h3>Excluir a Categoria</h3>
+    <EditForm Model="@Category" FormName="DeleteCategory" OnValidSubmit="SubmitAsync">
+        <div class="mb-3">
+            <label class="form-label">Nome da Categoria</label>
+            <InputText @bind-Value="Category.Title" class="form-control" readonly/>
+        </div>
+        <button type="submit" class="btn btn-danger mb-1">Excluir</button>
+        <a href="/categories" class="btn btn-success mb-1" role="button">Cancelar</a>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public Category? Category { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Category = await Context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
+    }
+
+    public async Task SubmitAsync()
+    {
+        Context.Categories.Remove(Category);
+        await Context.SaveChangesAsync();
+        Navigation.NavigateTo("categories");
+    }
+}
