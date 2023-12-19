@@ -1,10 +1,10 @@
-﻿@page "/categories/delete/{id:int}"
+﻿@page "/products/delete/{id:int}"
 @inject ApplicationDbContext Context
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 @attribute [Authorize]
 
-@if (Category is null)
+@if (product is null)
 {
     <p class="text-center">Categoria não encontrada</p>
     <a href="/categories" class="btn btn-secondary mb-1" role="button">Voltar</a>
@@ -12,30 +12,30 @@
 else
 {
     <h3>Excluir a Categoria</h3>
-    <EditForm Model="@Category" FormName="DeleteCategory" OnValidSubmit="SubmitAsync">
+    <EditForm Model="@product" FormName="DeleteProduct" OnValidSubmit="SubmitAsync">
         <div class="mb-3">
-            <label class="form-label">Nome da Categoria</label>
-            <InputText @bind-Value="Category.Title" class="form-control" readonly/>
+            <label class="form-label">Nome do Produto</label>
+            <InputText @bind-Value="product.Title" class="form-control" readonly />
         </div>
         <button type="submit" class="btn btn-danger mb-1">Excluir</button>
-        <a href="/categories" class="btn btn-success mb-1" role="button">Cancelar</a>
+        <a href="/products" class="btn btn-success mb-1" role="button">Cancelar</a>
     </EditForm>
 }
 @code {
     [Parameter]
     public int Id { get; set; }
 
-    public Category? Category { get; set; } = new();
+    public product? product { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        Category = await Context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
+        product = await Context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
     }
 
     public async Task SubmitAsync()
     {
-        Context.Categories.Remove(Category);
+        Context.Categories.Remove(product);
         await Context.SaveChangesAsync();
-        Navigation.NavigateTo("categories");
+        Navigation.NavigateTo("products");
     }
 }

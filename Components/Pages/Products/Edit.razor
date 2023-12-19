@@ -1,0 +1,55 @@
+﻿@page "/products/edit/{id:int}"
+@inject ApplicationDbContext Context
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@if (product is null)
+{
+    <p class="text-center">Produto não encontrado</p>
+    <a href="/product" class="btn btn-secondary mb-1" role="button">Voltar</a>
+}
+else
+{
+    <h3>Editar Produto</h3>
+    <EditForm Model="@product" FormName="EditProduct" OnValidSubmit="SubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label">Nome do Produto</label>
+            <InputText @bind-Value="product.Title" class="form-control" />
+            <ValidationMessage For="@(() => product.Title)" />
+            <label class="form-label">Categoria</label>
+            <InputSelect @bind-Value="product.CategoryId" class="form-control">
+                @* <option selected>@product.Category.Title</option> *@
+                @foreach (var category in Categories)
+                {
+                    <option value="@category.Id">@category.Title</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary mb-1">Salvar</button>
+        <a href="/products" class="btn btn-danger mb-1" role="button">Cancelar</a>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public Product? product { get; set; } = new();
+
+    public IEnumerable<Category> Categories { get; set; } = Enumerable.Empty<Category>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await Context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == Id);
+        Categories = await Context.Categories.AsNoTracking().OrderBy(c => c.Title).ToListAsync();
+    }
+
+    public async Task SubmitAsync()
+    {
+        Context.Products.Update(product);
+        await Context.SaveChangesAsync();
+        Navigation.NavigateTo("products");
+    }
+}
