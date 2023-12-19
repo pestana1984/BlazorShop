@@ -1,0 +1,40 @@
+﻿@page "/products/{id:int}"
+@inject ApplicationDbContext Context
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@if (product is null)
+{
+    <p class="text-center">Produto não encontrado</p>
+    <a href="/products" class="btn btn-secondary mb-1" role="button">Voltar</a>
+}
+else
+{
+    <h3>Informações</h3>
+    <EditForm Model="@product" FormName="DetailProduct">
+        <div class="mb-3">
+            <label class="form-label">Nome do Produto</label>
+            <InputText @bind-Value="product.Title" class="form-control" readonly />
+            <label class="form-label">Descricao do Produto</label>
+            <InputText @bind-Value="product.Description" class="form-control" readonly />
+            <label class="form-label">Categoria do Produto</label>
+            <InputText @bind-Value="product.Category.Title" class="form-control" readonly />
+            <label class="form-label">Valor do Produto</label>
+            <InputNumber @bind-Value="product.Price" class="form-control" readonly />
+
+        </div>
+        <a href="/products" class="btn btn-secondary mb-1" role="button">Voltar</a>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public Product? product { get; set; } = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        product = await Context.Products.AsNoTracking().Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == Id);
+    }
+
+}

@@ -1,6 +1,7 @@
 ﻿@page "/categories/{id:int}"
 @inject ApplicationDbContext Context
 @rendermode InteractiveServer
+@attribute [Authorize]
 
 @if (Category is null)
 {

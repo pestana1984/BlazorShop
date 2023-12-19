@@ -1,10 +1,12 @@
 ﻿@page "/categories"
+
 @inject ApplicationDbContext Context
 @attribute [StreamRendering(true)]
+@attribute [Authorize]
 
 <h3>Categorias</h3>
 
-<a href="/categories/create" class="btn btn-primary mb-1 mt-3" role="button">Cadastrar</a>
+<a href="/categories/create" class="btn btn-primary mb-1 mt-3" role="button">Cadastrar Categoria</a>
 
 @if(!Categories.Any())
 {
